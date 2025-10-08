@@ -1,0 +1,54 @@
+:root {
+    --cor-dourada: #D4AF37;
+    --cor-dourada-clara: #f5e7a1;
+    --cor-dourada-escura: #b8860b;
+}
+
+body {
+    background-color: #ea984e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.text-gold {
+    color: var(--cor-dourada) !important;
+}
+
+.btn-gold {
+    background-color: var(--cor-dourada);
+    border-color: var(--cor-dourada);
+}
+
+.btn-gold:hover {
+    background-color: var(--cor-dourada-escura);
+    border-color: var(--cor-dourada-escura);
+}
+
+.btn-outline-gold {
+  background-color: #ffffff !important;
+  color: var(--cor-dourada) !important;
+  border-color: var(--cor-dourada);
+}
+
+.btn-outline-gold:hover,
+.btn-outline-gold:focus,
+.btn-outline-gold:active {
+  background-color: var(--cor-dourada) !important;
+  color: #ffffff !important;
+  border-color: var(--cor-dourada) !important;
+  /* Opcional: remover a borda se quiser fundo cheio */
+  /* border: none !important; */
+}
+
+.card {
+    border-radius: 12px;
+    border: 1px solid #e0d0a0;
+    background-color:  #fff8e1;;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    color: #333;
+}
