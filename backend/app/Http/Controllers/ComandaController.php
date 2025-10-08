@@ -64,4 +64,50 @@ class ComandaController extends Controller
 
         return response()->json($comandas);
     }
+    // Salvar pedido de cozinha (mesa permanece aberta)
+
+    public function pedidoCozinha(Request $request)
+    {
+        // Validação
+        $request->validate([
+            'mesa_numero' => 'required|integer|min:1',
+            'itens' => 'required|array|min:1',
+            'itens.*.nome' => 'required|string',
+            'itens.*.preco' => 'required|numeric|min:0',
+            'itens.*.quantidade' => 'required|integer|min:1',
+        ]);
+
+        // Cria ou encontra a mesa
+        $mesa = Mesa::firstOrCreate(
+            ['numero' => $request->mesa_numero],
+            ['status' => 'aberta']
+        );
+
+        // Cria a comanda
+        $comanda = Comanda::create([
+            'mesa_id' => $mesa->id,
+            'aberta_em' => now(),
+            'fechada_em' => null,
+            'subtotal' => 0,
+            'gorjeta' => 0,
+            'total' => 0,
+        ]);
+
+        // Salva os itens UM POR UM
+        foreach ($request->itens as $itemData) {
+            ItemComanda::create([
+                'comanda_id' => $comanda->id,
+                'nome' => $itemData['nome'],
+                'preco_unitario' => $itemData['preco'],
+                'quantidade' => $itemData['quantidade'],
+                'observacao' => $itemData['observacao'] ?? null,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Pedido enviado para cozinha!',
+            'comanda_id' => $comanda->id,
+            'itens_salvos' => count($request->itens)
+        ], 201);
+    }
 }

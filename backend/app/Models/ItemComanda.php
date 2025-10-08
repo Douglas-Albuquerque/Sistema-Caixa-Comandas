@@ -17,6 +17,8 @@ class ItemComanda extends Model
         'observacao'
     ];
 
+    protected $table = 'itens_comanda';
+    
     public function comanda()
     {
         return $this->belongsTo(Comanda::class);

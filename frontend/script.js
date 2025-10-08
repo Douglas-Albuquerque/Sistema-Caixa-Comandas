@@ -199,64 +199,78 @@ function calcularPorPessoa() {
 function imprimirComanda() {
   const numeroMesa = document.getElementById('input-mesa').value.trim();
   if (!numeroMesa || isNaN(numeroMesa) || Number(numeroMesa) <= 0) {
-    alert('Informe o número da mesa antes de imprimir.');
+    alert('Informe o número da mesa antes de enviar para a cozinha.');
     return;
   }
 
-  // Cria um conteúdo de impressão personalizado
-  let conteudoImpressao = `
-    <html>
-    <head>
-      <title>Comanda - Nordestô</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h2 { color: #D4AF37; text-align: center; }
-        .item { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #ccc; }
-        .obs { color: #555; font-style: italic; margin-top: 4px; font-size: 0.9em; }
-        .total { font-weight: bold; margin-top: 15px; font-size: 1.2em; }
-      </style>
-    </head>
-    <body>
-      <h2>COMANDA COZINHA</h2>
-      <p><strong>Mesa:</strong> ${numeroMesa}</p>
-      <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-      <hr>
-  `;
+  // Prepara os itens para enviar ao back-end
+  const itensParaEnviar = comanda.map(item => ({
+    nome: item.nome,
+    preco: item.preco,
+    quantidade: item.quantidade,
+    observacao: item.observacao || null
+  }));
 
-  // Adiciona os itens
-  comanda.forEach(item => {
-    const totalItem = (item.preco * item.quantidade).toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
-    conteudoImpressao += `
-      <div class="item">
-        <div><strong>${item.quantidade}x ${item.nome}</strong> — ${totalItem}</div>
-        ${item.observacao ? `<div class="obs">Obs: ${item.observacao}</div>` : ''}
-      </div>
+  // Envia para o back-end
+  fetch('http://localhost:8000/api/pedido-cozinha', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+      mesa_numero: parseInt(numeroMesa),
+      itens: itensParaEnviar
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Sucesso:', data);
+
+    // Agora imprime a comanda (como antes)
+    let conteudoImpressao = `
+      <html>
+      <head>
+        <title>Comanda Cozinha - Nordestô</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h2 { color: #D4AF37; text-align: center; }
+          .item { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #ccc; }
+          .obs { color: #555; font-style: italic; margin-top: 4px; font-size: 0.9em; }
+        </style>
+      </head>
+      <body>
+        <h2>🕗 PEDIDO COZINHA</h2>
+        <p><strong>Mesa:</strong> ${numeroMesa}</p>
+        <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+        <hr>
     `;
+
+    comanda.forEach(item => {
+      conteudoImpressao += `
+        <div class="item">
+          <div><strong>${item.quantidade}x ${item.nome}</strong></div>
+          ${item.observacao ? `<div class="obs">Obs: ${item.observacao}</div>` : ''}
+        </div>
+      `;
+    });
+
+    conteudoImpressao += `
+        <p style="margin-top: 30px; font-size: 0.9em; color: #888;">
+          Nordestô • Pedido enviado ao sistema
+        </p>
+      </body>
+      </html>
+    `;
+
+    const janelaImpressao = window.open('', '_blank');
+    janelaImpressao.document.write(conteudoImpressao);
+    janelaImpressao.document.close();
+    janelaImpressao.focus();
+    setTimeout(() => janelaImpressao.print(), 500);
+  })
+  .catch(error => {
+    console.error('Erro:', error);
+    alert('Erro ao enviar pedido para a cozinha. Verifique se o servidor está rodando.');
   });
-
-  conteudoImpressao += `
-      <div class="total">
-        Total de itens: ${comanda.reduce((acc, item) => acc + item.quantidade, 0)}
-      </div>
-      <p style="margin-top: 30px; font-size: 0.9em; color: #888;">
-        Comanda gerada pelo sistema Nordestô • Não é um cupom fiscal
-      </p>
-    </body>
-    </html>
-  `;
-
-  // Abre em nova janela e imprime
-  const janelaImpressao = window.open('', '_blank');
-  janelaImpressao.document.write(conteudoImpressao);
-  janelaImpressao.document.close();
-  janelaImpressao.focus();
-
-  // Opcional: imprimir automaticamente (pode ser bloqueado em alguns navegadores)
-  setTimeout(() => {
-    janelaImpressao.print();
-    // janelaImpressao.close(); // não fecha automaticamente para permitir salvar como PDF
-  }, 500);
 }
