@@ -13,17 +13,60 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
+<!-- Menu de Navegação com Logo Centralizado -->
+<!-- Menu de Navegação -->
+<!-- Navbar Híbrida -->
+<nav class="navbar navbar-expand-lg navbar-custom mb-4">
+    <div class="container">
+        <!-- Botão do menu-->
+        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Logo centralizado -->
+        <a class="navbar-brand mx-auto" href="index.html">
+            <img src="assets/logo.png" alt="Nordestô" height="60">
+        </a>
+
+        <!-- Links de navegação -->
+        <div class="collapse navbar-collapse justify-content-end d-none d-lg-block">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="index.html">Comanda</a></li>
+                <li class="nav-item"><a class="nav-link" href="caixa.html">Caixa</a></li>
+                <li class="nav-item"><a class="nav-link" href="mesas.html">Mesas</a></li>
+                <li class="nav-item"><a class="nav-link" href="relatorios.html">Relatórios</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar Mobile -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="navbar-nav flex-column">
+            <li class="nav-item"><a class="nav-link" href="index.html">Comanda</a></li>
+            <li class="nav-item"><a class="nav-link" href="caixa.html">Caixa</a></li>
+            <li class="nav-item"><a class="nav-link" href="mesas.html">Mesas</a></li>
+            <li class="nav-item"><a class="nav-link" href="relatorios.html">Relatórios</a></li>
+        </ul>
+    </div>
+</div>
+
 <body>
     <div class="container mt-4">
-        <header class="text-center mb-4">
+        <!-- <header class="text-center mb-4">
             <img src="assets/logo.png" alt="Nordestô" class="img-fluid" style="max-height: 80px;">
-        </header>
+        </header> -->
 
         <!-- Tela de Comanda -->
         <div id="tela-comanda" class="card p-4 shadow">
             <div class="mb-4 text-center">
                 <label for="input-mesa" class="form-label fw-bold">Número da Mesa</label>
-                <input type="number" id="input-mesa" class="form-control mx-auto text-center" style="max-width: 70px;"
+                <input type="number" id="input-mesa" class="form-control mx-auto text-center" style="max-width: 60px;"
                     min="1" value="1">
             </div>
 
@@ -79,49 +122,12 @@
                 <h4 class="text-gold">Total: <span id="total">R$0,00</span></h4>
             </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <button class="btn btn-outline-secondary" onclick="imprimirComanda()"><i class="bi bi-printer"></i></button>
                 <button class="btn btn-outline-secondary" onclick="limparComanda()">Limpar</button>
-                <button class="btn btn-gold text-white" onclick="fecharConta()">Fechar Conta</button>
+                <button class="btn btn-gold text-white" onclick="imprimirComanda()">
+                    <i class="bi bi-printer"></i>
+                </button>
             </div>
         </div>
-
-        <!-- Tela de Fechamento -->
-        <div id="tela-fechamento" class="card p-4 shadow d-none">
-            <h3 class="text-center mb-4">Conta da Mesa <span id="mesa-fechamento">?</span></h3>
-
-            <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                    <strong>Subtotal:</strong>
-                    <span id="subtotal-fechamento">R$0,00</span>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                    <strong>Gorjeta (10%):</strong>
-                    <span id="gorjeta-fechamento">R$0,00</span>
-                </div>
-            </div>
-
-            <div class="alert alert-success text-center py-3 mb-4">
-                <h2 class="mb-2">Total com Gorjeta</h2>
-                <h1 class="text-gold" id="total-com-gorjeta">R$0,00</h1>
-                <p class="mb-0 text-muted">A gorjeta é opcional e ajuda nosso time!</p>
-            </div>
-
-            <!-- Campo para número de pessoas -->
-            <div class="mb-4">
-                <label for="input-pessoas" class="form-label fw-bold">Número de Pessoas na Mesa</label>
-                <input type="number" id="input-pessoas" class="form-control text-center mx-auto"
-                    style="max-width: 120px;" min="1" value="1" oninput="calcularPorPessoa()">
-            </div>
-
-            <!-- Exibição do valor por pessoa -->
-            <div class="text-center mb-4">
-                <p class="mb-1">Valor por pessoa (com gorjeta):</p>
-                <h3 class="text-gold" id="valor-por-pessoa">R$0,00</h3>
-            </div>
-
             <div class="d-grid gap-2">
                 <button class="btn btn-gold text-white" onclick="voltarComanda()">Voltar / Nova Comanda</button>
             </div>

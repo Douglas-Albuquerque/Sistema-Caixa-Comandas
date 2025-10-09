@@ -19,6 +19,8 @@ class Comanda extends Model
         'forma_pagamento'
     ];
 
+    protected $table = 'comandas';
+
     protected $casts = [
         'aberta_em' => 'datetime',
         'fechada_em' => 'datetime',
