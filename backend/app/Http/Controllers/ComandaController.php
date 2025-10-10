@@ -70,18 +70,27 @@ class ComandaController extends Controller
     {
         // Validação
         $request->validate([
-            'mesa_numero' => 'required|integer|min:1',
+            'mesa_numero' => 'required|integer|min:1|exists:mesas,numero',
             'itens' => 'required|array|min:1',
             'itens.*.nome' => 'required|string',
             'itens.*.preco' => 'required|numeric|min:0',
             'itens.*.quantidade' => 'required|integer|min:1',
         ]);
 
-        // Cria ou encontra a mesa
-        $mesa = Mesa::firstOrCreate(
-            ['numero' => $request->mesa_numero],
-            ['status' => 'aberta']
-        );
+        // Verifica se a mesa existe e está FECHADA (disponível)
+        $mesa = Mesa::where('numero', $request->mesa_numero)
+            ->where('status', 'fechada')
+            ->first();
+
+        if (!$mesa) {
+            return response()->json([
+                'message' => 'Mesa não disponível. Verifique se já está em uso ou não existe.'
+            ], 400);
+        }
+
+        // Abre a mesa (muda status para "aberta")
+        $mesa->status = 'aberta';
+        $mesa->save();
 
         // Cria a comanda
         $comanda = Comanda::create([
@@ -91,6 +100,7 @@ class ComandaController extends Controller
             'subtotal' => 0,
             'gorjeta' => 0,
             'total' => 0,
+            'forma_pagamento' => null,
         ]);
 
         // Salva os itens UM POR UM
@@ -107,7 +117,16 @@ class ComandaController extends Controller
         return response()->json([
             'message' => 'Pedido enviado para cozinha!',
             'comanda_id' => $comanda->id,
+            'mesa_numero' => $mesa->numero,
             'itens_salvos' => count($request->itens)
         ], 201);
+    }
+    public function mesasDisponiveis()
+    {
+        $mesas = \App\Models\Mesa::where('status', 'fechada')
+            ->orderBy('numero')
+            ->get(['id', 'numero']);
+
+        return response()->json($mesas);
     }
 }

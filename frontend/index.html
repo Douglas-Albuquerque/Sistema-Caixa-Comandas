@@ -13,9 +13,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<!-- Menu de Navegação com Logo Centralizado -->
-<!-- Menu de Navegação -->
-<!-- Navbar Híbrida -->
 <nav class="navbar navbar-expand-lg navbar-custom mb-4">
     <div class="container">
         <!-- Botão do menu-->
@@ -65,53 +62,49 @@
         <!-- Tela de Comanda -->
         <div id="tela-comanda" class="card p-4 shadow">
             <div class="mb-4 text-center">
-                <label for="input-mesa" class="form-label fw-bold">Número da Mesa</label>
-                <input type="number" id="input-mesa" class="form-control mx-auto text-center" style="max-width: 60px;"
-                    min="1" value="1">
+                <label for="select-mesa" class="form-label fw-bold">Selecione uma Mesa</label>
+                <select id="select-mesa" class="form-select mx-auto" style="max-width: 70px;">
+                    <option value="">...</option>
+                </select>
             </div>
 
             <!-- Sanduíches -->
+            <!-- Sanduíches -->
             <div class="mb-4">
-                <h5>Sanduíches</h5>
+                <h5 class="mb-3">Sanduíches</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('X-Frango', 14.00)">X-Frango -
-                        R$14,00</button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('X-Salada', 14.00)">X-Salada -
-                        R$14,00</button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('X-Tudo', 22.00)">X-Tudo -
-                        R$22,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalSanduiche('X-Burguer', 12.00)">X-Burguer - R$12,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalSanduiche('X-Salada', 14.00)">X-Salada - R$14,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalSanduiche('X-Bacon', 16.00)">X-Bacon - R$16,00</button>
                 </div>
             </div>
 
             <!-- Batatas -->
             <div class="mb-4">
-                <h5>Batatas Fritas</h5>
+                <h5 class="mb-3">Batatas Fritas</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Batata Pequena', 7.00)">Pequena -
-                        R$7,00</button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Batata Média', 10.00)">Média -
-                        R$10,00</button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Batata Grande', 15.00)">Grande -
-                        R$15,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalBatata('Batata Pequena', 6.00)">Pequena - R$6,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalBatata('Batata Média', 8.00)">Média - R$8,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalBatata('Batata Grande', 10.00)">Grande - R$10,00</button>
                 </div>
             </div>
 
             <!-- Bebidas -->
             <div class="mb-4">
-                <h5>Bebidas</h5>
+                <h5 class="mb-3">Bebidas</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Refrigerante', 3.50)">
-                        Refrigerante - R$3,50
-                    </button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Vitamina Maracujá', 9.00)">
-                        Vitamina-Maracujá - R$9,00
-                    </button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Vitamina Abacaxi', 8.00)">
-                        Vitamina-Abacaxi - R$8,00
-                    </button>
-                    <button class="btn btn-outline-gold" onclick="adicionarItem('Água s/ gás', 3.00)">
-                        Água s/ gás - R$3,00
-                    </button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalBebida('Refrigerante', 5.00)">Refrigerante - R$5,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalBebida('Suco Natural', 7.00)">Suco Natural - R$7,00</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;"
+                        onclick="abrirModalBebida('Água', 3.00)">Água - R$3,00</button>
                 </div>
             </div>
 
@@ -121,23 +114,170 @@
                 <ul id="lista-itens" class="list-group mb-3"></ul>
                 <h4 class="text-gold">Total: <span id="total">R$0,00</span></h4>
             </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
                 <button class="btn btn-outline-secondary" onclick="limparComanda()">Limpar</button>
                 <button class="btn btn-gold text-white" onclick="imprimirComanda()">
                     <i class="bi bi-printer"></i>
                 </button>
             </div>
+
         </div>
-            <div class="d-grid gap-2">
-                <button class="btn btn-gold text-white" onclick="voltarComanda()">Voltar / Nova Comanda</button>
+
+        <!-- Modal de Opções para Sanduíches -->
+        <div class="modal fade" id="modalSanduiche" tabindex="-1" aria-labelledby="modalSanduicheLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalSanduicheLabel">Opções do Sanduíche</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Tipo de pão (radio buttons) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de Pão</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="pao" id="paoArabe" value="Pão Árabe">
+                                <label class="form-check-label" for="paoArabe">Pão Árabe</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="pao" id="paoBola" value="Pão Bola">
+                                <label class="form-check-label" for="paoBola">Pão Bola</label>
+                            </div>
+                        </div>
+
+                        <!-- Ingredientes (checkboxes) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Remover Ingredientes</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="semSalada" value="sem salada">
+                                <label class="form-check-label" for="semSalada">Sem salada</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="semMolho" value="sem molho">
+                                <label class="form-check-label" for="semMolho">Sem molho</label>
+                            </div>
+                        </div>
+
+                        <!-- Adicionais (checkboxes com preço) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Adicionais</label>
+                            <div class="form-check">
+                                <input class="form-check-input adicional" type="checkbox" id="baconExtra"
+                                    data-preco="2.00">
+                                <label class="form-check-label" for="baconExtra">Bacon extra (+ R$2,00)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input adicional" type="checkbox" id="carneExtra"
+                                    data-preco="5.00">
+                                <label class="form-check-label" for="carneExtra">Carne extra (+ R$5,00)</label>
+                            </div>
+                        </div>
+
+                        <!-- Observação livre -->
+                        <div class="mb-3">
+                            <label for="obsSanduiche" class="form-label">Outras observações</label>
+                            <textarea class="form-control" id="obsSanduiche" rows="2"
+                                placeholder="Ex: bem passado, extra bacon..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-gold text-white"
+                            onclick="salvarOpcoesSanduiche()">Adicionar ao Pedido</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        <!-- Modal de Opções para Batatas -->
+        <div class="modal fade" id="modalBatata" tabindex="-1" aria-labelledby="modalBatataLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalBatataLabel">Opções da Batata</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Adicionais -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Adicionais</label>
+                            <div class="form-check">
+                                <input class="form-check-input adicional-batata" type="checkbox" id="queijoBatata"
+                                    data-preco="3.00">
+                                <label class="form-check-label" for="queijoBatata">Queijo (+ R$3,00)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input adicional-batata" type="checkbox" id="baconBatata"
+                                    data-preco="2.50">
+                                <label class="form-check-label" for="baconBatata">Bacon (+ R$2,50)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input adicional-batata" type="checkbox" id="ovoBatata"
+                                    data-preco="2.00">
+                                <label class="form-check-label" for="ovoBatata">Ovo (+ R$2,00)</label>
+                            </div>
+                        </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Script personalizado -->
-    <script src="script.js"></script>
+                        <!-- Observação livre -->
+                        <div class="mb-3">
+                            <label for="obsBatata" class="form-label">Outras observações</label>
+                            <textarea class="form-control" id="obsBatata" rows="2"
+                                placeholder="Ex: bem frita, sem sal..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-gold text-white" onclick="salvarOpcoesBatata()">Adicionar
+                            ao Pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal de Opções para Bebidas -->
+        <div class="modal fade" id="modalBebida" tabindex="-1" aria-labelledby="modalBebidaLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalBebidaLabel">Opções da Bebida</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Preferências -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Preferências</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="semGelo" value="sem gelo">
+                                <label class="form-check-label" for="semGelo">Sem gelo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="semAcucar" value="sem açúcar">
+                                <label class="form-check-label" for="semAcucar">Sem açúcar</label>
+                            </div>
+                        </div>
+
+                        <!-- Observação livre -->
+                        <div class="mb-3">
+                            <label for="obsBebida" class="form-label">Outras observações</label>
+                            <textarea class="form-control" id="obsBebida" rows="2"
+                                placeholder="Ex: com canudo, copo extra..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-gold text-white" onclick="salvarOpcoesBebida()">Adicionar
+                            ao Pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Script personalizado -->
+        <script src="script.js"></script>
 </body>
 
 </html>

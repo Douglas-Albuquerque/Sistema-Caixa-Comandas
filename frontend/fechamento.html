@@ -1,36 +1,41 @@
 <!-- Tela de Fechamento -->
-        <div id="tela-fechamento" class="card p-4 shadow d-none">
-            <h3 class="text-center mb-4">Conta da Mesa <span id="mesa-fechamento">?</span></h3>
+<div id="tela-fechamento" class="card p-4 shadow d-none">
+    <h3 class="text-center mb-4">Conta da Mesa <span id="mesa-fechamento">?</span></h3>
 
-            <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                    <strong>Subtotal:</strong>
-                    <span id="subtotal-fechamento">R$0,00</span>
-                </div>
-            </div>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between">
+            <strong>Subtotal:</strong>
+            <span id="subtotal-fechamento">R$0,00</span>
+        </div>
+    </div>
 
-            <div class="mb-3">
-                <div class="d-flex justify-content-between">
-                    <strong>Gorjeta (10%):</strong>
-                    <span id="gorjeta-fechamento">R$0,00</span>
-                </div>
-            </div>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between">
+            <strong>Gorjeta (10%):</strong>
+            <span id="gorjeta-fechamento">R$0,00</span>
+        </div>
+    </div>
 
-            <div class="alert alert-success text-center py-3 mb-4">
-                <h2 class="mb-2">Total com Gorjeta</h2>
-                <h1 class="text-gold" id="total-com-gorjeta">R$0,00</h1>
-                <p class="mb-0 text-muted">A gorjeta é opcional e ajuda nosso time!</p>
-            </div>
+    <div class="alert alert-success text-center py-3 mb-4">
+        <h2 class="mb-2">Total com Gorjeta</h2>
+        <h1 class="text-gold" id="total-com-gorjeta">R$0,00</h1>
+        <p class="mb-0 text-muted">A gorjeta é opcional e ajuda nosso time!</p>
+    </div>
 
-            <!-- Campo para número de pessoas -->
-            <div class="mb-4">
-                <label for="input-pessoas" class="form-label fw-bold">Número de Pessoas na Mesa</label>
-                <input type="number" id="input-pessoas" class="form-control text-center mx-auto"
-                    style="max-width: 120px;" min="1" value="1" oninput="calcularPorPessoa()">
-            </div>
+    <!-- Campo para número de pessoas -->
+    <div class="mb-4">
+        <label for="input-pessoas" class="form-label fw-bold">Número de Pessoas na Mesa</label>
+        <input type="number" id="input-pessoas" class="form-control text-center mx-auto" style="max-width: 120px;"
+            min="1" value="1" oninput="calcularPorPessoa()">
+    </div>
 
-            <!-- Exibição do valor por pessoa -->
-            <div class="text-center mb-4">
-                <p class="mb-1">Valor por pessoa (com gorjeta):</p>
-                <h3 class="text-gold" id="valor-por-pessoa">R$0,00</h3>
-            </div>
+    <!-- Exibição do valor por pessoa -->
+    <div class="text-center mb-4">
+        <p class="mb-1">Valor por pessoa (com gorjeta):</p>
+        <h3 class="text-gold" id="valor-por-pessoa">R$0,00</h3>
+    </div>
+</div>
+<div class="d-grid gap-2">
+    <button class="btn btn-gold text-white" onclick="voltarComanda()">Voltar / Nova Comanda</button>
+</div>
+</div>
