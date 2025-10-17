@@ -129,9 +129,4 @@ class ComandaController extends Controller
 
         return response()->json($mesas);
     }
-    public function todasMesas()
-{
-    $mesas = \App\Models\Mesa::orderBy('numero')->get(['id', 'numero', 'status']);
-    return response()->json($mesas);
-}
 }

@@ -1,0 +1,138 @@
+:root {
+    --cor-dourada: #D4AF37;
+    --cor-dourada-clara: #f5e7a1;
+    --cor-dourada-escura: #b8860b;
+}
+
+body {
+    background-color: #ea984e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.text-gold {
+    color: var(--cor-dourada) !important;
+}
+
+.btn-gold {
+    background-color: var(--cor-dourada);
+    border-color: var(--cor-dourada);
+}
+
+.btn-gold:hover {
+    background-color: var(--cor-dourada-escura);
+    border-color: var(--cor-dourada-escura);
+}
+
+.btn-outline-gold {
+  background-color: #ffffff !important;
+  color: var(--cor-dourada) !important;
+  border-color: var(--cor-dourada);
+}
+
+.btn-outline-gold:hover,
+.btn-outline-gold:focus,
+.btn-outline-gold:active {
+  background-color: var(--cor-dourada) !important;
+  color: #ffffff !important;
+  border-color: var(--cor-dourada) !important;
+  /* Opcional: remover a borda se quiser fundo cheio */
+  /* border: none !important; */
+}
+
+.card {
+    border-radius: 12px;
+    border: 1px solid #e0d0a0;
+    background-color:  #fff8e1;;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    color: #333;
+}
+
+/* Garante que o logo fique centralizado */
+.navbar-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* Empurra o menu para a direita em telas grandes */
+@media (min-width: 992px) {
+  .navbar-nav {
+    margin-left: auto;
+  }
+}
+
+/* ===== NAVBAR PERSONALIZADA ===== */
+.navbar-custom {
+  background-color: #ea984e !important; /* laranja dourado */
+}
+
+/* Links da navbar: branco */
+.navbar-custom .navbar-nav .nav-link {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* Hover e foco: preto */
+.navbar-custom .navbar-nav .nav-link:hover,
+.navbar-custom .navbar-nav .nav-link:focus,
+.navbar-custom .navbar-nav .nav-link.active {
+  color: #000000 !important;
+  background-color: transparent !important;
+}
+
+/* Ícone do menu hamburguer (mobile): branco */
+.navbar-custom .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Botão do menu hamburguer: fundo transparente, borda branca */
+.navbar-custom .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ===== SIDEBAR MOBILE (OFFCANVAS) ===== */
+.offcanvas {
+  background-color: #ea984e; /* Mesma cor da navbar */
+}
+
+.offcanvas .nav-link {
+  color: #ffffff !important;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.offcanvas .nav-link:hover {
+  color: #000000 !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Botão de fechar a sidebar */
+.offcanvas .btn-close {
+  background-color: #ffffff;
+  padding: 2px;
+}
+
+/* Título da sidebar */
+.offcanvas-title {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* Largura personalizada da sidebar */
+.offcanvas-start {
+  width: 180px !important; /* Largura desejada */
+  max-width: 90vw !important; /* Em celulares muito pequenos, não ultrapassa 90% da tela */
+}
+
+/* Opcional: ajuste o padding interno */
+.offcanvas-body {
+  padding: 0.5rem 1rem;
+}

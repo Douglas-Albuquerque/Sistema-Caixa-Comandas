@@ -1,0 +1,14 @@
+.:
+ads_advertising_promotion_campaign_marketing_media_icon_266355.ico
+[0m[01;34massets[0m/
+caixa.html
+fechamento.html
+index.html
+mesas.html
+readme.md
+relatorios.html
+script.js
+style.css
+
+./assets:
+logo.png
