@@ -4,18 +4,6 @@ function formatarMoeda(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Adiciona um novo item à comanda
-function adicionarItem(nome, preco) {
-  // Verifica se já existe o mesmo item (mesmo nome e observação vazia)
-  const itemExistente = comanda.find(item => item.nome === nome && item.observacao === '');
-  if (itemExistente) {
-    itemExistente.quantidade += 1;
-  } else {
-    comanda.push({ nome, preco, observacao: '', quantidade: 1 });
-  }
-  atualizarComanda();
-}
-
 // Aumenta a quantidade de um item
 function aumentarQuantidade(index) {
   comanda[index].quantidade += 1;
@@ -31,19 +19,25 @@ function diminuirQuantidade(index) {
   atualizarComanda();
 }
 
-// Alterna o campo de observação
+// Alterna o campo de observação OU reabre o modal completo
 function toggleObservacao(index) {
-  const obsDiv = document.getElementById(`obs-div-${index}`);
-  if (!obsDiv) return;
-
-  const isVisible = obsDiv.style.display === 'block';
-  obsDiv.style.display = isVisible ? 'none' : 'block';
-
-  if (!isVisible) {
-    setTimeout(() => {
-      const input = document.getElementById(`obs-input-${index}`);
-      if (input) input.focus();
-    }, 100);
+  const item = comanda[index];
+  if (item.nome.includes('X-') || item.nome.includes('Burguer') || item.nome.includes('Salada') || item.nome.includes('Bacon')) {
+    reabrirModalSanduiche(item, index);
+  } else if (item.nome.includes('Batata')) {
+    reabrirModalBatata(item, index);
+  } else {
+    // Para bebidas ou itens genéricos: só edita observação
+    const obsDiv = document.getElementById(`obs-div-${index}`);
+    if (!obsDiv) return;
+    const isVisible = obsDiv.style.display === 'block';
+    obsDiv.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) {
+      setTimeout(() => {
+        const input = document.getElementById(`obs-input-${index}`);
+        if (input) input.focus();
+      }, 100);
+    }
   }
 }
 
@@ -51,45 +45,39 @@ function toggleObservacao(index) {
 function atualizarComanda() {
   const lista = document.getElementById('lista-itens');
   const totalEl = document.getElementById('total');
-
   lista.innerHTML = '';
   let total = 0;
 
   comanda.forEach((item, index) => {
-    const valorItem = item.preco * item.quantidade;
+    // Calcula preço total (suporta getter ou valor direto)
+    const precoItem = typeof item.preco === 'function' ? item.preco() : item.preco;
+    const valorItem = precoItem * item.quantidade;
     total += valorItem;
 
     const li = document.createElement('li');
     li.className = 'list-group-item p-2';
 
-    // Linha principal: nome, preço total do item, e botões de quantidade
     const headerDiv = document.createElement('div');
     headerDiv.className = 'd-flex justify-content-between align-items-center mb-1';
-
     const nomeDiv = document.createElement('div');
     nomeDiv.innerHTML = `<strong>${item.nome}</strong>`;
-
     const acoesDiv = document.createElement('div');
     acoesDiv.className = 'd-flex align-items-center gap-2';
 
-    // Botão de diminuir
     const btnMenos = document.createElement('button');
     btnMenos.className = 'btn btn-sm btn-outline-danger';
     btnMenos.textContent = '–';
     btnMenos.onclick = () => diminuirQuantidade(index);
 
-    // Quantidade
     const qtdSpan = document.createElement('span');
     qtdSpan.className = 'mx-2 fw-bold';
     qtdSpan.textContent = item.quantidade;
 
-    // Botão de aumentar
     const btnMais = document.createElement('button');
     btnMais.className = 'btn btn-sm btn-outline-success';
     btnMais.textContent = '+';
     btnMais.onclick = () => aumentarQuantidade(index);
 
-    // Botão de observação
     const btnObs = document.createElement('button');
     btnObs.className = 'btn btn-sm btn-outline-secondary';
     btnObs.innerHTML = '✏️';
@@ -99,37 +87,55 @@ function atualizarComanda() {
     acoesDiv.appendChild(qtdSpan);
     acoesDiv.appendChild(btnMais);
     acoesDiv.appendChild(btnObs);
-
     headerDiv.appendChild(nomeDiv);
     headerDiv.appendChild(acoesDiv);
 
-    // Preço do item (com quantidade)
+    // Preço do item
     const precoDiv = document.createElement('div');
     precoDiv.className = 'text-muted small mt-1';
-    precoDiv.textContent = `${formatarMoeda(item.preco)} × ${item.quantidade} = ${formatarMoeda(valorItem)}`;
+    precoDiv.textContent = `${formatarMoeda(precoItem)} × ${item.quantidade} = ${formatarMoeda(valorItem)}`;
 
-    // Campo de observação (inicialmente escondido)
+    // Detalhes das opções (pão, ingredientes removidos, adicionais)
+    let detalhesTexto = '';
+    if (item.pao) {
+      detalhesTexto += `Pão: ${item.pao}`;
+    }
+    if (item.ingredientesRemovidos && item.ingredientesRemovidos.length > 0) {
+      if (detalhesTexto) detalhesTexto += ' | ';
+      detalhesTexto += `Sem: ${item.ingredientesRemovidos.join(', ')}`;
+    }
+    if (item.adicionais && item.adicionais.length > 0) {
+      if (detalhesTexto) detalhesTexto += ' | ';
+      detalhesTexto += `Adicionais: ${item.adicionais.map(a => a.nome).join(', ')}`;
+    }
+
+    const detalhesDiv = document.createElement('div');
+    detalhesDiv.className = 'text-muted small mt-1';
+    detalhesDiv.style.fontStyle = 'italic';
+    detalhesDiv.textContent = detalhesTexto;
+
+    // Campo de observação (só se houver texto digitado)
     const obsDiv = document.createElement('div');
     obsDiv.id = `obs-div-${index}`;
     obsDiv.className = 'mt-2';
-    obsDiv.style.display = item.observacao ? 'block' : 'none';
+    obsDiv.style.display = item.observacaoLivre ? 'block' : 'none';
     obsDiv.innerHTML = `
       <textarea 
         id="obs-input-${index}" 
         class="form-control form-control-sm" 
-        placeholder="Ex: sem tomate, mal passado..." 
+        placeholder="Observação adicional..."
         rows="2"
-      >${item.observacao}</textarea>
+      >${item.observacaoLivre || ''}</textarea>
     `;
 
-    // Adiciona evento de digitação sem recriar o DOM
     const textarea = obsDiv.querySelector('textarea');
     textarea.addEventListener('input', function () {
-      comanda[index].observacao = this.value;
+      comanda[index].observacaoLivre = this.value;
     });
 
     li.appendChild(headerDiv);
     li.appendChild(precoDiv);
+    if (detalhesTexto) li.appendChild(detalhesDiv);
     li.appendChild(obsDiv);
     lista.appendChild(li);
   });
@@ -145,16 +151,16 @@ function limparComanda() {
 
 // Fecha a conta
 function fecharConta() {
-  const inputMesa = document.getElementById('input-mesa');
-  const numeroMesa = inputMesa.value.trim();
-
+  const selectMesa = document.getElementById('select-mesa');
+  const numeroMesa = selectMesa.value.trim();
   if (!numeroMesa || isNaN(numeroMesa) || Number(numeroMesa) <= 0) {
-    alert('Por favor, informe um número de mesa válido.');
-    inputMesa.focus();
+    alert('Por favor, selecione uma mesa válida.');
     return;
   }
-
-  const subtotal = comanda.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
+  const subtotal = comanda.reduce((soma, item) => {
+    const preco = typeof item.preco === 'function' ? item.preco() : item.preco;
+    return soma + preco * item.quantidade;
+  }, 0);
   const gorjeta = subtotal * 0.10;
   const totalComGorjeta = subtotal + gorjeta;
 
@@ -162,10 +168,7 @@ function fecharConta() {
   document.getElementById('subtotal-fechamento').textContent = formatarMoeda(subtotal);
   document.getElementById('gorjeta-fechamento').textContent = formatarMoeda(gorjeta);
   document.getElementById('total-com-gorjeta').textContent = formatarMoeda(totalComGorjeta);
-
-  // Inicializa o cálculo por pessoa
   calcularPorPessoa();
-
   document.getElementById('tela-comanda').classList.add('d-none');
   document.getElementById('tela-fechamento').classList.remove('d-none');
 }
@@ -178,91 +181,97 @@ function voltarComanda() {
   atualizarComanda();
 }
 
-/**
- * Calcula e exibe o valor por pessoa com base no total com gorjeta
- */
+// Calcula valor por pessoa
 function calcularPorPessoa() {
   const inputPessoas = document.getElementById('input-pessoas');
   const numPessoas = parseInt(inputPessoas.value) || 1;
-
-  // Obter o total com gorjeta (já formatado como texto, então vamos reusar o cálculo)
-  const subtotal = comanda.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
-  const totalComGorjeta = subtotal * 1.10; // subtotal + 10%
-
+  const subtotal = comanda.reduce((soma, item) => {
+    const preco = typeof item.preco === 'function' ? item.preco() : item.preco;
+    return soma + preco * item.quantidade;
+  }, 0);
+  const totalComGorjeta = subtotal * 1.10;
   const valorPorPessoa = totalComGorjeta / numPessoas;
-
   document.getElementById('valor-por-pessoa').textContent = formatarMoeda(valorPorPessoa);
 }
-/**
- * Imprime a comanda atual (para enviar à cozinha)
- */
+
+// Imprime comanda e envia para cozinha
+// Imprime comanda e envia para cozinha
 function imprimirComanda() {
   const selectMesa = document.getElementById('select-mesa');
   const numeroMesa = selectMesa.value;
-
   if (!numeroMesa) {
     alert('Por favor, selecione uma mesa.');
     selectMesa.focus();
     return;
   }
-  if (!numeroMesa || isNaN(numeroMesa) || Number(numeroMesa) <= 0) {
-    alert('Informe o número da mesa antes de enviar para a cozinha.');
-    return;
-  }
 
   // Prepara os itens para enviar ao back-end
-  const itensParaEnviar = comanda.map(item => ({
-    nome: item.nome,
-    preco: item.preco,
-    quantidade: item.quantidade,
-    observacao: item.observacao || null
-  }));
+  const itensParaEnviar = comanda.map(item => {
+    const preco = typeof item.preco === 'function' ? item.preco() : item.preco;
+    return {
+      nome: item.nome,
+      preco: preco,
+      quantidade: item.quantidade,
+      observacao: item.observacao || null
+    };
+  });
 
-  // Envia para o back-end
   fetch('http://localhost:8000/api/pedido-cozinha', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    },
-    body: JSON.stringify({
-      mesa_numero: parseInt(numeroMesa),
-      itens: itensParaEnviar
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mesa_numero: parseInt(numeroMesa), itens: itensParaEnviar })
   })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Sucesso:', data);
-
-      // Agora imprime a comanda (como antes)
-      let conteudoImpressao = `
+  .then(response => response.json())
+  .then(data => {
+    let conteudoImpressao = `
       <html>
-      <head>
-        <title>Comanda Cozinha - Nordestô</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          h2 { color: #D4AF37; text-align: center; }
-          .item { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #ccc; }
-          .obs { color: #555; font-style: italic; margin-top: 4px; font-size: 0.9em; }
+      <head><title>Comanda Cozinha - Nordestô</title>
+        <style>body { font-family: Arial, sans-serif; padding: 20px; }
+        h2 { color: #D4AF37; text-align: center; }
+        .item { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #ccc; }
+        .obs { color: #555; font-style: italic; margin-top: 4px; font-size: 0.9em; }
         </style>
       </head>
       <body>
         <h2>🕗 PEDIDO COZINHA</h2>
         <p><strong>Mesa:</strong> ${numeroMesa}</p>
-        <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-        <hr>
+        <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p><hr>
     `;
 
-      comanda.forEach(item => {
-        conteudoImpressao += `
-        <div class="item">
-          <div><strong>${item.quantidade}x ${item.nome}</strong></div>
-          ${item.observacao ? `<div class="obs">Obs: ${item.observacao}</div>` : ''}
-        </div>
-      `;
-      });
+    comanda.forEach(item => {
+      const preco = typeof item.preco === 'function' ? item.preco() : item.preco;
+      let detalhes = '';
+
+      // Pão (só se existir)
+      if (item.pao) {
+        detalhes += `Pão: ${item.pao}`;
+      }
+
+      // Ingredientes removidos (só se existirem)
+      if (item.ingredientesRemovidos && item.ingredientesRemovidos.length > 0) {
+        if (detalhes) detalhes += ' | ';
+        detalhes += `Sem: ${item.ingredientesRemovidos.join(', ')}`;
+      }
+
+      // Adicionais (só se existirem)
+      if (item.adicionais && item.adicionais.length > 0) {
+        if (detalhes) detalhes += ' | ';
+        detalhes += `Adicionais: ${item.adicionais.map(a => a.nome).join(', ')}`;
+      }
+
+      // Observação (só se existir)
+      const obsLivre = item.observacaoLivre || '';
+      const obsFinal = obsLivre ? `Obs: ${obsLivre}` : '';
 
       conteudoImpressao += `
+        <div class="item">
+          <div><strong>${item.quantidade}x ${item.nome}</strong>${detalhes ? `<br><small>${detalhes}</small>` : ''}</div>
+          ${obsFinal ? `<div class="obs">${obsFinal}</div>` : ''}
+        </div>
+      `;
+    });
+
+    conteudoImpressao += `
         <p style="margin-top: 30px; font-size: 0.9em; color: #888;">
           Nordestô • Pedido enviado ao sistema
         </p>
@@ -270,229 +279,277 @@ function imprimirComanda() {
       </html>
     `;
 
-      const janelaImpressao = window.open('', '_blank');
-      janelaImpressao.document.write(conteudoImpressao);
-      janelaImpressao.document.close();
-      janelaImpressao.focus();
-      setTimeout(() => janelaImpressao.print(), 500);
-    })
-    .catch(error => {
-      console.error('Erro:', error);
-      alert('Erro ao enviar pedido para a cozinha. Verifique se o servidor está rodando.');
-    });
+    const janela = window.open('', '_blank');
+    janela.document.write(conteudoImpressao);
+    janela.document.close();
+    janela.focus();
+    setTimeout(() => janela.print(), 500);
+  })
+  .catch(error => {
+    console.error('Erro:', error);
+    alert('Erro ao enviar pedido para a cozinha.');
+  });
 }
-function carregarMesasDisponiveis() {
-  const selectMesa = document.getElementById('select-mesa');
 
+// Carrega mesas disponíveis
+function carregarMesasDisponiveis() {
   fetch('http://localhost:8000/api/mesas-disponiveis')
     .then(response => response.json())
     .then(mesas => {
-      // Limpa opções antigas
-      selectMesa.innerHTML = '';
-
-      if (mesas.length === 0) {
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = 'Nenhuma mesa disponível';
-        selectMesa.appendChild(option);
-        selectMesa.disabled = true;
-      } else {
-        const optionPadrao = document.createElement('option');
-        optionPadrao.value = '';
-        optionPadrao.textContent = '-'; // Apenas um traço
-        optionPadrao.disabled = true;   // Impede seleção (opcional)
-        optionPadrao.selected = true;   // Seleciona por padrão
-        selectMesa.appendChild(optionPadrao);
-
-        mesas.forEach(mesa => {
-          const option = document.createElement('option');
-          option.value = mesa.numero;
-          option.textContent = `${mesa.numero}`;
-          selectMesa.appendChild(option);
-        });
-        selectMesa.disabled = false;
-      }
+      const select = document.getElementById('select-mesa');
+      select.innerHTML = '<option value="">-</option>';
+      mesas.forEach(mesa => {
+        const opt = document.createElement('option');
+        opt.value = mesa.numero;
+        opt.textContent = mesa.numero;
+        select.appendChild(opt);
+      });
     })
-    .catch(error => {
-      console.error('Erro ao carregar mesas:', error);
-      selectMesa.innerHTML = '<option value="">Erro ao carregar</option>';
-      selectMesa.disabled = true;
-    });
+    .catch(console.error);
 }
 document.addEventListener('DOMContentLoaded', carregarMesasDisponiveis);
 
+// =============== SANDUÍCHES ===============
 let itemSelecionado = null;
-
-/**
- * Abre o modal com as opções para sanduíches
- */
 function abrirModalSanduiche(nome, preco) {
   itemSelecionado = { nome, preco };
-
-  // Reseta TODOS os campos do modal
-  // 1. Desmarca todos os radios de pão
-  document.querySelectorAll('input[name="pao"]').forEach(radio => {
-    radio.checked = false;
-  });
-
-  // 2. Desmarca todos os checkboxes de ingredientes
+  document.querySelectorAll('input[name="pao"]').forEach(r => r.checked = false);
   document.getElementById('semSalada').checked = false;
   document.getElementById('semMolho').checked = false;
-
-  // 3. Desmarca todos os checkboxes de adicionais
-  document.querySelectorAll('.adicional').forEach(checkbox => {
-    checkbox.checked = false;
-  });
-
-  // 4. Limpa o campo de observação
+  document.querySelectorAll('.adicional').forEach(cb => cb.checked = false);
   document.getElementById('obsSanduiche').value = '';
-
-  // Mostra o modal
-  const modal = new bootstrap.Modal(document.getElementById('modalSanduiche'));
-  modal.show();
+  new bootstrap.Modal(document.getElementById('modalSanduiche')).show();
 }
 
-/**
- * Salva as opções selecionadas e adiciona o item à comanda
- */
 function salvarOpcoesSanduiche() {
   if (!itemSelecionado) return;
 
-  // Coleta opções de pão
-  const paoSelecionado = document.querySelector('input[name="pao"]:checked');
-  const pao = paoSelecionado ? paoSelecionado.value : '';
-
-  // Coleta ingredientes removidos
+  const pao = document.querySelector('input[name="pao"]:checked')?.value || '';
   const ingredientesRemovidos = [];
-  if (document.getElementById('semSalada').checked) {
-    ingredientesRemovidos.push('sem salada');
-  }
-  if (document.getElementById('semMolho').checked) {
-    ingredientesRemovidos.push('sem molho');
-  }
+  if (document.getElementById('semSalada').checked) ingredientesRemovidos.push('sem salada');
+  if (document.getElementById('semMolho').checked) ingredientesRemovidos.push('sem molho');
 
-  // Coleta adicionais e calcula valor extra
-  let valorAdicionais = 0;
-  const adicionaisSelecionados = [];
-  document.querySelectorAll('.adicional:checked').forEach(checkbox => {
-    const preco = parseFloat(checkbox.getAttribute('data-preco'));
-    const nome = checkbox.nextElementSibling.textContent.split(' (+')[0];
-    valorAdicionais += preco;
-    adicionaisSelecionados.push(nome);
+  const adicionais = [];
+  document.querySelectorAll('.adicional:checked').forEach(cb => {
+    const nome = cb.nextElementSibling.textContent.split(' (+')[0];
+    const preco = parseFloat(cb.getAttribute('data-preco'));
+    adicionais.push({ nome, preco });
   });
 
-  // Observação livre
   const obsLivre = document.getElementById('obsSanduiche').value.trim();
 
-  // Monta a observação completa
-  let observacao = [];
-  if (pao) observacao.push(pao);
-  if (ingredientesRemovidos.length > 0) observacao.push(ingredientesRemovidos.join(', '));
-  if (adicionaisSelecionados.length > 0) observacao.push('Adicionais: ' + adicionaisSelecionados.join(', '));
-  if (obsLivre) observacao.push(obsLivre);
-
-  const observacaoFinal = observacao.join(' | ') || '';
-
-  // Calcula preço total com adicionais
-  const precoTotal = itemSelecionado.preco + valorAdicionais;
-
-  // Adiciona à comanda
   comanda.push({
     nome: itemSelecionado.nome,
-    preco: precoTotal, // ← preço com adicionais
-    observacao: observacaoFinal,
-    quantidade: 1
+    precoBase: itemSelecionado.preco,
+    pao: pao,
+    ingredientesRemovidos: ingredientesRemovidos,
+    adicionais: adicionais,
+    observacaoLivre: obsLivre,
+    quantidade: 1,
+    get preco() {
+      return this.precoBase + (this.adicionais?.reduce((s, a) => s + a.preco, 0) || 0);
+    }
   });
 
   atualizarComanda();
-
-  // Fecha o modal
   bootstrap.Modal.getInstance(document.getElementById('modalSanduiche')).hide();
 }
-// Variáveis para armazenar itens selecionados
-let itemBatataSelecionado = null;
-let itemBebidaSelecionado = null;
 
-// === BATATAS ===
+// =============== BATATAS ===============
+let itemBatataSelecionado = null;
 function abrirModalBatata(nome, preco) {
   itemBatataSelecionado = { nome, preco };
-  
-  // Reseta o modal
   document.querySelectorAll('.adicional-batata').forEach(cb => cb.checked = false);
+  document.getElementById('semMolho').checked = false;
   document.getElementById('obsBatata').value = '';
-  
-  const modal = new bootstrap.Modal(document.getElementById('modalBatata'));
-  modal.show();
+  new bootstrap.Modal(document.getElementById('modalBatata')).show();
 }
 
 function salvarOpcoesBatata() {
   if (!itemBatataSelecionado) return;
 
-  // Calcula adicionais
-  let valorAdicionais = 0;
-  const adicionaisSelecionados = [];
-  document.querySelectorAll('.adicional-batata:checked').forEach(checkbox => {
-    const preco = parseFloat(checkbox.getAttribute('data-preco'));
-    const nome = checkbox.nextElementSibling.textContent.split(' (+')[0];
-    valorAdicionais += preco;
-    adicionaisSelecionados.push(nome);
+  const ingredientesRemovidos = [];
+  if (document.getElementById('semMolho').checked) ingredientesRemovidos.push('sem molho');
+
+  const adicionais = [];
+  document.querySelectorAll('.adicional-batata:checked').forEach(cb => {
+    const nome = cb.nextElementSibling.textContent.split(' (+')[0];
+    const preco = parseFloat(cb.getAttribute('data-preco'));
+    adicionais.push({ nome, preco });
   });
 
-  // Observação
   const obsLivre = document.getElementById('obsBatata').value.trim();
-  let observacao = [];
-  if (adicionaisSelecionados.length > 0) observacao.push('Adicionais: ' + adicionaisSelecionados.join(', '));
-  if (obsLivre) observacao.push(obsLivre);
-  const observacaoFinal = observacao.join(' | ') || '';
 
-  // Adiciona à comanda
   comanda.push({
     nome: itemBatataSelecionado.nome,
-    preco: itemBatataSelecionado.preco + valorAdicionais,
-    observacao: observacaoFinal,
-    quantidade: 1
+    precoBase: itemBatataSelecionado.preco,
+    ingredientesRemovidos: ingredientesRemovidos,
+    adicionais: adicionais,
+    observacaoLivre: obsLivre,
+    quantidade: 1,
+    get preco() {
+      return this.precoBase + (this.adicionais?.reduce((s, a) => s + a.preco, 0) || 0);
+    }
   });
 
   atualizarComanda();
   bootstrap.Modal.getInstance(document.getElementById('modalBatata')).hide();
 }
 
-// === BEBIDAS ===
-function abrirModalBebida(nome, preco) {
-  itemBebidaSelecionado = { nome, preco };
-  
-  // Reseta o modal
-  document.getElementById('semGelo').checked = false;
-  document.getElementById('semAcucar').checked = false;
-  document.getElementById('obsBebida').value = '';
-  
-  const modal = new bootstrap.Modal(document.getElementById('modalBebida'));
+// =============== BEBIDAS (simples) ===============
+function abrirModalRefrigerantes() {
+  document.querySelectorAll('.bebida-refri').forEach(cb => cb.checked = false);
+  document.getElementById('obsRefrigerantes').value = '';
+  new bootstrap.Modal(document.getElementById('modalRefrigerantes')).show();
+}
+function salvarRefrigerantes() {
+  const selecionados = [];
+  document.querySelectorAll('.bebida-refri:checked').forEach(cb => {
+    const nome = cb.nextElementSibling.textContent.split(' -')[0];
+    const preco = parseFloat(cb.getAttribute('data-preco'));
+    selecionados.push({ nome, preco });
+  });
+  const obs = document.getElementById('obsRefrigerantes').value.trim();
+  if (selecionados.length === 0) { alert('Selecione pelo menos um refrigerante.'); return; }
+  selecionados.forEach(item => {
+    comanda.push({ nome: item.nome, preco: item.preco, observacaoLivre: obs, quantidade: 1 });
+  });
+  atualizarComanda();
+  bootstrap.Modal.getInstance(document.getElementById('modalRefrigerantes')).hide();
+}
+
+function abrirModalVitaminas() {
+  document.querySelectorAll('.bebida-vitamina').forEach(cb => cb.checked = false);
+  document.getElementById('obsVitaminas').value = '';
+  new bootstrap.Modal(document.getElementById('modalVitaminas')).show();
+}
+function salvarVitaminas() {
+  const selecionados = [];
+  document.querySelectorAll('.bebida-vitamina:checked').forEach(cb => {
+    const nome = cb.nextElementSibling.textContent.split(' -')[0];
+    const preco = parseFloat(cb.getAttribute('data-preco'));
+    selecionados.push({ nome, preco });
+  });
+  const obs = document.getElementById('obsVitaminas').value.trim();
+  if (selecionados.length === 0) { alert('Selecione pelo menos uma vitamina.'); return; }
+  selecionados.forEach(item => {
+    comanda.push({ nome: item.nome, preco: item.preco, observacaoLivre: obs, quantidade: 1 });
+  });
+  atualizarComanda();
+  bootstrap.Modal.getInstance(document.getElementById('modalVitaminas')).hide();
+}
+
+function abrirModalAgua() {
+  document.querySelectorAll('.bebida-agua').forEach(cb => cb.checked = false);
+  document.getElementById('obsAgua').value = '';
+  new bootstrap.Modal(document.getElementById('modalAgua')).show();
+}
+function salvarAgua() {
+  const selecionados = [];
+  document.querySelectorAll('.bebida-agua:checked').forEach(cb => {
+    const nome = cb.nextElementSibling.textContent.split(' -')[0];
+    const preco = parseFloat(cb.getAttribute('data-preco'));
+    selecionados.push({ nome, preco });
+  });
+  const obs = document.getElementById('obsAgua').value.trim();
+  if (selecionados.length === 0) { alert('Selecione pelo menos uma opção de água.'); return; }
+  selecionados.forEach(item => {
+    comanda.push({ nome: item.nome, preco: item.preco, observacaoLivre: obs, quantidade: 1 });
+  });
+  atualizarComanda();
+  bootstrap.Modal.getInstance(document.getElementById('modalAgua')).hide();
+}
+
+// =============== REABRIR MODAIS PARA EDIÇÃO ===============
+function reabrirModalSanduiche(item, index) {
+  window.itemEmEdicao = { item, index };
+
+  document.querySelectorAll('input[name="pao"]').forEach(r => r.checked = false);
+  document.getElementById('semSalada').checked = false;
+  document.getElementById('semMolho').checked = false;
+  document.querySelectorAll('.adicional').forEach(cb => cb.checked = false);
+  document.getElementById('obsSanduiche').value = item.observacaoLivre || '';
+
+  if (item.pao === 'Pão Árabe') document.getElementById('paoArabe').checked = true;
+  if (item.pao === 'Pão Bola') document.getElementById('paoBola').checked = true;
+  if (item.ingredientesRemovidos?.includes('sem salada')) document.getElementById('semSalada').checked = true;
+  if (item.ingredientesRemovidos?.includes('sem molho')) document.getElementById('semMolho').checked = true;
+
+  (item.adicionais || []).forEach(ad => {
+    if (ad.nome.includes('Bacon extra')) document.getElementById('baconExtra').checked = true;
+    if (ad.nome.includes('Carne extra')) document.getElementById('carneExtra').checked = true;
+  });
+
+  const modal = new bootstrap.Modal(document.getElementById('modalSanduiche'));
+  const salvarOriginal = window.salvarOpcoesSanduiche;
+  window.salvarOpcoesSanduiche = function() {
+    const { item, index } = window.itemEmEdicao;
+
+    const pao = document.querySelector('input[name="pao"]:checked')?.value || '';
+    const ingredientesRemovidos = [];
+    if (document.getElementById('semSalada').checked) ingredientesRemovidos.push('sem salada');
+    if (document.getElementById('semMolho').checked) ingredientesRemovidos.push('sem molho');
+
+    const novosAdicionais = [];
+    document.querySelectorAll('.adicional:checked').forEach(cb => {
+      const nome = cb.nextElementSibling.textContent.split(' (+')[0];
+      const preco = parseFloat(cb.getAttribute('data-preco'));
+      novosAdicionais.push({ nome, preco });
+    });
+
+    const obsLivre = document.getElementById('obsSanduiche').value.trim();
+
+    item.pao = pao;
+    item.ingredientesRemovidos = ingredientesRemovidos;
+    item.adicionais = novosAdicionais;
+    item.observacaoLivre = obsLivre;
+
+    atualizarComanda();
+    window.salvarOpcoesSanduiche = salvarOriginal;
+    delete window.itemEmEdicao;
+    modal.hide();
+  };
   modal.show();
 }
 
-function salvarOpcoesBebida() {
-  if (!itemBebidaSelecionado) return;
+function reabrirModalBatata(item, index) {
+  window.itemEmEdicao = { item, index };
 
-  // Coleta preferências
-  const preferencias = [];
-  if (document.getElementById('semGelo').checked) preferencias.push('sem gelo');
-  if (document.getElementById('semAcucar').checked) preferencias.push('sem açúcar');
+  document.querySelectorAll('.adicional-batata').forEach(cb => cb.checked = false);
+  document.getElementById('semMolho').checked = false;
+  document.getElementById('obsBatata').value = item.observacaoLivre || '';
 
-  // Observação
-  const obsLivre = document.getElementById('obsBebida').value.trim();
-  let observacao = [];
-  if (preferencias.length > 0) observacao.push(preferencias.join(', '));
-  if (obsLivre) observacao.push(obsLivre);
-  const observacaoFinal = observacao.join(' | ') || '';
-
-  // Adiciona à comanda
-  comanda.push({
-    nome: itemBebidaSelecionado.nome,
-    preco: itemBebidaSelecionado.preco,
-    observacao: observacaoFinal,
-    quantidade: 1
+  if (item.ingredientesRemovidos?.includes('sem molho')) document.getElementById('semMolho').checked = true;
+  (item.adicionais || []).forEach(ad => {
+    if (ad.nome.includes('Queijo Cheddar')) document.getElementById('queijoBatata').checked = true;
+    if (ad.nome.includes('Bacon')) document.getElementById('baconBatata').checked = true;
   });
 
-  atualizarComanda();
-  bootstrap.Modal.getInstance(document.getElementById('modalBebida')).hide();
+  const modal = new bootstrap.Modal(document.getElementById('modalBatata'));
+  const salvarOriginal = window.salvarOpcoesBatata;
+  window.salvarOpcoesBatata = function() {
+    const { item, index } = window.itemEmEdicao;
+
+    const ingredientesRemovidos = [];
+    if (document.getElementById('semMolho').checked) ingredientesRemovidos.push('sem molho');
+
+    const novosAdicionais = [];
+    document.querySelectorAll('.adicional-batata:checked').forEach(cb => {
+      const nome = cb.nextElementSibling.textContent.split(' (+')[0];
+      const preco = parseFloat(cb.getAttribute('data-preco'));
+      novosAdicionais.push({ nome, preco });
+    });
+
+    const obsLivre = document.getElementById('obsBatata').value.trim();
+
+    item.ingredientesRemovidos = ingredientesRemovidos;
+    item.adicionais = novosAdicionais;
+    item.observacaoLivre = obsLivre;
+
+    atualizarComanda();
+    window.salvarOpcoesBatata = salvarOriginal;
+    delete window.itemEmEdicao;
+    modal.hide();
+  };
+  modal.show();
 }

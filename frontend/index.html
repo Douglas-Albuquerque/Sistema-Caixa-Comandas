@@ -7,27 +7,41 @@
     <title>Nordestô</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Ícones (opcional) -->
+    <!-- Ícones -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-<nav class="navbar navbar-expand-lg navbar-custom mb-4">
-    <div class="container">
-        <!-- Botão do menu-->
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+        <div class="container">
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand mx-auto" href="index.html">
+                <img src="assets/logo.png" alt="Nordestô" height="60">
+            </a>
+            <div class="collapse navbar-collapse justify-content-end d-none d-lg-block">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Comanda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="caixa.html">Caixa</a></li>
+                    <li class="nav-item"><a class="nav-link" href="mesas.html">Mesas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="relatorios.html">Relatórios</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-        <!-- Logo centralizado -->
-        <a class="navbar-brand mx-auto" href="index.html">
-            <img src="assets/logo.png" alt="Nordestô" height="60">
-        </a>
-
-        <!-- Links de navegação -->
-        <div class="collapse navbar-collapse justify-content-end d-none d-lg-block">
-            <ul class="navbar-nav">
+    <!-- Sidebar Mobile -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="index.html">Comanda</a></li>
                 <li class="nav-item"><a class="nav-link" href="caixa.html">Caixa</a></li>
                 <li class="nav-item"><a class="nav-link" href="mesas.html">Mesas</a></li>
@@ -35,31 +49,8 @@
             </ul>
         </div>
     </div>
-</nav>
 
-<!-- Sidebar Mobile -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <ul class="navbar-nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="index.html">Comanda</a></li>
-            <li class="nav-item"><a class="nav-link" href="caixa.html">Caixa</a></li>
-            <li class="nav-item"><a class="nav-link" href="mesas.html">Mesas</a></li>
-            <li class="nav-item"><a class="nav-link" href="relatorios.html">Relatórios</a></li>
-        </ul>
-    </div>
-</div>
-
-<body>
     <div class="container mt-4">
-        <!-- <header class="text-center mb-4">
-            <img src="assets/logo.png" alt="Nordestô" class="img-fluid" style="max-height: 80px;">
-        </header> -->
-
-        <!-- Tela de Comanda -->
         <div id="tela-comanda" class="card p-4 shadow">
             <div class="mb-4 text-center">
                 <label for="select-mesa" class="form-label fw-bold">Selecione uma Mesa</label>
@@ -68,7 +59,6 @@
                 </select>
             </div>
 
-            <!-- Sanduíches -->
             <!-- Sanduíches -->
             <div class="mb-4">
                 <h5 class="mb-3">Sanduíches</h5>
@@ -99,12 +89,11 @@
             <div class="mb-4">
                 <h5 class="mb-3">Bebidas</h5>
                 <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-gold" style="width: 190px;"
+                        onclick="abrirModalRefrigerantes()">Refrigerantes</button>
                     <button class="btn btn-outline-gold" style="width: 180px;"
-                        onclick="abrirModalBebida('Refrigerante', 5.00)">Refrigerante - R$5,00</button>
-                    <button class="btn btn-outline-gold" style="width: 180px;"
-                        onclick="abrirModalBebida('Suco Natural', 7.00)">Suco Natural - R$7,00</button>
-                    <button class="btn btn-outline-gold" style="width: 180px;"
-                        onclick="abrirModalBebida('Água', 3.00)">Água - R$3,00</button>
+                        onclick="abrirModalVitaminas()">Vitaminas</button>
+                    <button class="btn btn-outline-gold" style="width: 180px;" onclick="abrirModalAgua()">Água</button>
                 </div>
             </div>
 
@@ -120,10 +109,9 @@
                     <i class="bi bi-printer"></i>
                 </button>
             </div>
-
         </div>
 
-        <!-- Modal de Opções para Sanduíches -->
+        <!-- Modal Sanduíche-->
         <div class="modal fade" id="modalSanduiche" tabindex="-1" aria-labelledby="modalSanduicheLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -133,33 +121,28 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Tipo de pão (radio buttons) -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tipo de Pão</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="pao" id="paoArabe" value="Pão Árabe">
-                                <label class="form-check-label" for="paoArabe">Pão Árabe</label>
+                                <input class="form-check-input" type="radio" name="pao" id="paoArabe" value="Árabe">
+                                <label class="form-check-label" for="paoArabe">Árabe</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="pao" id="paoBola" value="Pão Bola">
-                                <label class="form-check-label" for="paoBola">Pão Bola</label>
+                                <input class="form-check-input" type="radio" name="pao" id="paoBola" value="Bola">
+                                <label class="form-check-label" for="paoBola">Bola</label>
                             </div>
                         </div>
-
-                        <!-- Ingredientes (checkboxes) -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Remover Ingredientes</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="semSalada" value="sem salada">
-                                <label class="form-check-label" for="semSalada">Sem salada</label>
+                                <input class="form-check-input" type="checkbox" id="semSalada" value="Salada">
+                                <label class="form-check-label" for="semSalada">Salada</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="semMolho" value="sem molho">
-                                <label class="form-check-label" for="semMolho">Sem molho</label>
+                                <input class="form-check-input" type="checkbox" id="semMolho" value="Molho">
+                                <label class="form-check-label" for="semMolho">Molho</label>
                             </div>
                         </div>
-
-                        <!-- Adicionais (checkboxes com preço) -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Adicionais</label>
                             <div class="form-check">
@@ -173,24 +156,23 @@
                                 <label class="form-check-label" for="carneExtra">Carne extra (+ R$5,00)</label>
                             </div>
                         </div>
-
-                        <!-- Observação livre -->
                         <div class="mb-3">
                             <label for="obsSanduiche" class="form-label">Outras observações</label>
                             <textarea class="form-control" id="obsSanduiche" rows="2"
-                                placeholder="Ex: bem passado, extra bacon..."></textarea>
+                                placeholder="Ex: bem passado..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary"
                             data-bs-dismiss="modal">Cancelar</button>
                         <button type="button" class="btn btn-gold text-white"
-                            onclick="salvarOpcoesSanduiche()">Adicionar ao Pedido</button>
+                            onclick="salvarOpcoesSanduiche()">Salvar</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal de Opções para Batatas -->
+
+        <!-- Modal Batata (mantido) -->
         <div class="modal fade" id="modalBatata" tabindex="-1" aria-labelledby="modalBatataLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -199,85 +181,167 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Adicionais -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Adicionais</label>
+                            <label class="form-label fw-bold">Remover Ingredientes</label>
                             <div class="form-check">
-                                <input class="form-check-input adicional-batata" type="checkbox" id="queijoBatata"
-                                    data-preco="3.00">
-                                <label class="form-check-label" for="queijoBatata">Queijo (+ R$3,00)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input adicional-batata" type="checkbox" id="baconBatata"
-                                    data-preco="2.50">
-                                <label class="form-check-label" for="baconBatata">Bacon (+ R$2,50)</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input adicional-batata" type="checkbox" id="ovoBatata"
-                                    data-preco="2.00">
-                                <label class="form-check-label" for="ovoBatata">Ovo (+ R$2,00)</label>
+                                <input class="form-check-input" type="checkbox" id="semMolho" value="Molho">
+                                <label class="form-check-label" for="semMolho">Molho</label>
                             </div>
                         </div>
-
-                        <!-- Observação livre -->
+                        
                         <div class="mb-3">
                             <label for="obsBatata" class="form-label">Outras observações</label>
                             <textarea class="form-control" id="obsBatata" rows="2"
-                                placeholder="Ex: bem frita, sem sal..."></textarea>
+                                placeholder="Ex: bem frita..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary"
                             data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-gold text-white" onclick="salvarOpcoesBatata()">Adicionar
-                            ao Pedido</button>
+                        <button type="button" class="btn btn-gold text-white"
+                            onclick="salvarOpcoesBatata()">Salvar</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal de Opções para Bebidas -->
-        <div class="modal fade" id="modalBebida" tabindex="-1" aria-labelledby="modalBebidaLabel" aria-hidden="true">
+
+        <!-- Modal Refrigerantes -->
+        <div class="modal fade" id="modalRefrigerantes" tabindex="-1" aria-labelledby="modalRefrigerantesLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalBebidaLabel">Opções da Bebida</h5>
+                        <h5 class="modal-title" id="modalRefrigerantesLabel">Refrigerantes</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Preferências -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Preferências</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="semGelo" value="sem gelo">
-                                <label class="form-check-label" for="semGelo">Sem gelo</label>
+                                <input class="form-check-input bebida-refri" type="checkbox" id="fantaUva"
+                                    data-preco="5.00">
+                                <label class="form-check-label" for="fantaUva">Fanta Uva - R$5,00</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="semAcucar" value="sem açúcar">
-                                <label class="form-check-label" for="semAcucar">Sem açúcar</label>
+                                <input class="form-check-input bebida-refri" type="checkbox" id="coca"
+                                    data-preco="5.50">
+                                <label class="form-check-label" for="coca">Coca-Cola - R$5,50</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input bebida-refri" type="checkbox" id="cocaZero"
+                                    data-preco="5.50">
+                                <label class="form-check-label" for="cocaZero">Coca Zero - R$5,50</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input bebida-refri" type="checkbox" id="saoGeraldo"
+                                    data-preco="5.50">
+                                <label class="form-check-label" for="saoGeraldo">São Geraldo - R$5,50</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input bebida-refri" type="checkbox" id="saoGeraldoZero"
+                                    data-preco="5.50">
+                                <label class="form-check-label" for="saoGeraldoZero">São Geraldo Zero - R$5,50</label>
                             </div>
                         </div>
-
-                        <!-- Observação livre -->
                         <div class="mb-3">
-                            <label for="obsBebida" class="form-label">Outras observações</label>
-                            <textarea class="form-control" id="obsBebida" rows="2"
-                                placeholder="Ex: com canudo, copo extra..."></textarea>
+                            <label for="obsRefrigerantes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="obsRefrigerantes" rows="2"
+                                placeholder="Ex: todos com gelo..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary"
                             data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-gold text-white" onclick="salvarOpcoesBebida()">Adicionar
-                            ao Pedido</button>
+                        <button type="button" class="btn btn-gold text-white"
+                            onclick="salvarRefrigerantes()">Salvar</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bootstrap JS -->
+        <!-- Modal Vitaminas -->
+        <div class="modal fade" id="modalVitaminas" tabindex="-1" aria-labelledby="modalVitaminasLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalVitaminasLabel">Vitaminas</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input bebida-vitamina" type="checkbox" id="caju"
+                                    data-preco="8.00">
+                                <label class="form-check-label" for="caju">Caju - R$8,00</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input bebida-vitamina" type="checkbox" id="goiaba"
+                                    data-preco="8.00">
+                                <label class="form-check-label" for="goiaba">Goiaba - R$8,00</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input bebida-vitamina" type="checkbox" id="maracuja"
+                                    data-preco="9.00">
+                                <label class="form-check-label" for="maracuja">Maracujá - R$9,00</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="obsVitaminas" class="form-label">Observações</label>
+                            <textarea class="form-control" id="obsVitaminas" rows="2"
+                                placeholder="Ex: sem açúcar..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-gold text-white" onclick="salvarVitaminas()">Adicionar ao
+                            Pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Água -->
+        <div class="modal fade" id="modalAgua" tabindex="-1" aria-labelledby="modalAguaLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAguaLabel">Água</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input bebida-agua" type="checkbox" id="aguaComGas"
+                                    data-preco="4.00">
+                                <label class="form-check-label" for="aguaComGas">Com gás - R$4,00</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input bebida-agua" type="checkbox" id="aguaSemGas"
+                                    data-preco="3.00">
+                                <label class="form-check-label" for="aguaSemGas">Sem gás - R$3,00</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="obsAgua" class="form-label">Observações</label>
+                            <textarea class="form-control" id="obsAgua" rows="2"
+                                placeholder="Ex: copo extra..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-gold text-white" onclick="salvarAgua()">Adicionar ao
+                            Pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Script personalizado -->
         <script src="script.js"></script>
+    </div>
 </body>
 
 </html>
